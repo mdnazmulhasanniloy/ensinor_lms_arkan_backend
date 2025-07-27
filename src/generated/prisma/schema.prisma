@@ -14,14 +14,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//user schema
 model User {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   email       String    @unique
+  designation String
   password    String
   status      status    @default(active)
-  role        Role      @default(user)
+  role        Role      @default(student)
   profile     String?
   phoneNumber String?
   expireAt    DateTime? @default(now())
@@ -29,13 +29,21 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  verification     Verification?
-  location         UserLocation?
-  emergencyContact EmergencyContact[]
-  alertPost        AlertPost[]
-  subscription     Subscription[]
-  deviceHistory    DeviceHistory[]
-  payments         Payments[]
+  verification   Verification?
+  cv             CV?
+  // location         UserLocation?
+  // emergencyContact EmergencyContact[]
+  // alertPost        AlertPost[]
+  education      Education[]
+  experience     Experience[]
+  certifications Certifications[]
+  subscription   Subscription[]
+  deviceHistory  DeviceHistory[]
+  payments       Payments[]
+
+  ChatParticipant  ChatParticipant[]
+  messagesSent     Message[]         @relation("MessageSender")
+  messagesReceived Message[]         @relation("MessageReceiver")
 }
 
 model DeviceHistory {
@@ -62,83 +70,80 @@ model Verification {
   @@id([userId])
 }
 
-model UserLocation {
-  userId      String   @id @map("_id") @db.ObjectId
-  type        String   @default("Point")
-  coordinates Float[]
+//cv
+model CV {
+  userId      String   @map("_id") @db.ObjectId
+  aboutMe     String?
+  phoneNumber String?
+  email       String?
+  linkedIn    String?
+  portfolio   String?
+  location    String?
+  skills      String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  education      Education[]
+  experience     Experience[]
+  certifications Certifications[]
 
   user User @relation(fields: [userId], references: [id])
+
+  @@id([userId])
 }
 
-//SafeZone schema
+//education
+model Education {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId               String    @db.ObjectId
+  institution          String
+  degree               String
+  concentrationOrMajor String?
+  results              String?
+  isCurrent            Boolean   @default(false)
+  startDate            DateTime
+  endDate              DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
-model SafeZone {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  description        String
-  expectedReturnTime DateTime
-  notification       Boolean  @default(true)
-  startLocationId    String?  @db.ObjectId
-  endLocationId      String?  @db.ObjectId
-  isDeleted          Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  startLocation Location? @relation("StartLocation", fields: [startLocationId], references: [id])
-  endLocation   Location? @relation("EndLocation", fields: [endLocationId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  cv   CV   @relation(fields: [userId], references: [userId])
 }
 
-model Location {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  type        String   @default("Point")
-  coordinates Float[]
-  isDeleted   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+//experience
+model Experience {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String    @db.ObjectId
+  company          String
+  position         String
+  jobType          String
+  IndustryType     String
+  location         String
+  responsibilities String
+  startDate        DateTime
+  isCurrent        Boolean   @default(false)
+  endDate          DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  startZones SafeZone[] @relation("StartLocation")
-  endZones   SafeZone[] @relation("EndLocation")
+  user User @relation(fields: [userId], references: [id])
+  cv   CV   @relation(fields: [userId], references: [userId])
 }
 
-//Emergency Contact
+//certifications
+model Certifications {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String  @db.ObjectId
+  institute    String
+  degree       String
+  credentialId String?
+  pdfUrl       String?
 
-model EmergencyContact {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  profile     String
-  name        String
-  relation    String
-  phoneNumber String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isDeleted   Boolean  @default(false)
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-//Posts
-model AlertPost {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  alertType String
-  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user     User               @relation(fields: [userId], references: [id])
-  location AlertPostLocation?
-}
-
-model AlertPostLocation {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  alertPostId String   @unique @db.ObjectId
-  type        String   @default("Point")
-  coordinates Float[]
-  images      String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  alertPost AlertPost @relation(fields: [alertPostId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  cv   CV   @relation(fields: [userId], references: [userId])
 }
 
 //contents
@@ -203,9 +208,61 @@ enum status {
   blocked
 }
 
+/**
+ * ---------------------------------------------Messing---------------------------------------------
+ */
+//chat
+model Chat {
+  id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  participants ChatParticipant[]
+  status       ChatStatus        @default(accepted)
+  messages     Message[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model ChatParticipant {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  chatId String @db.ObjectId
+
+  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id])
+
+  @@unique([userId, chatId])
+}
+
+model Message {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  text     String?
+  imageUrl String[]
+  seen     Boolean  @default(false)
+
+  sender   User   @relation("MessageSender", fields: [senderId], references: [id])
+  senderId String @db.ObjectId
+
+  receiver   User   @relation("MessageReceiver", fields: [receiverId], references: [id])
+  receiverId String @db.ObjectId
+
+  chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
   admin
   sub_admin
   supper_admin
-  user
+  student
+  instructor
+  business_instructor
+  company_admin
+  employee
+}
+
+enum ChatStatus {
+  accepted
+  blocked
 }

@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import AppError from '../error/AppError';
 import config from '../config';
-import { User } from '../modules/user/user.models';
+import prisma from 'app/shared/prisma';
 
 const getUserDetailsFromToken = async (token: string) => {
   if (!token) {
@@ -14,7 +14,18 @@ const getUserDetailsFromToken = async (token: string) => {
     token,
     config.jwt_access_secret as string,
   );
-  const user = await User.findById(decode.userId).select('-password');
+  const user = await prisma.user.findFirst({
+    where: { id: decode?.userId },
+    include: {
+      verification: {
+        select: {
+          status: true,
+        },
+      },
+    },
+  });
+
+  // User.findById(decode.userId).select('-password');
   return user;
 };
 

@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.11.1
- * Query Engine version: f40f79ec31188888a2e33acda0ecc8fd10a853a9
+ * Prisma Client JS version: 6.12.0
+ * Query Engine version: 8047c96bbd92db98a2abc7c9323ce77c02c89dbc
  */
 Prisma.prismaVersion = {
-  client: "6.11.1",
-  engine: "f40f79ec31188888a2e33acda0ecc8fd10a853a9"
+  client: "6.12.0",
+  engine: "8047c96bbd92db98a2abc7c9323ce77c02c89dbc"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -117,6 +117,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  designation: 'designation',
   password: 'password',
   status: 'status',
   role: 'role',
@@ -146,62 +147,56 @@ exports.Prisma.VerificationScalarFieldEnum = {
   status: 'status'
 };
 
-exports.Prisma.UserLocationScalarFieldEnum = {
+exports.Prisma.CVScalarFieldEnum = {
   userId: 'userId',
-  type: 'type',
-  coordinates: 'coordinates',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SafeZoneScalarFieldEnum = {
-  id: 'id',
-  description: 'description',
-  expectedReturnTime: 'expectedReturnTime',
-  notification: 'notification',
-  startLocationId: 'startLocationId',
-  endLocationId: 'endLocationId',
-  isDeleted: 'isDeleted',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.LocationScalarFieldEnum = {
-  id: 'id',
-  type: 'type',
-  coordinates: 'coordinates',
-  isDeleted: 'isDeleted',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.EmergencyContactScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  profile: 'profile',
-  name: 'name',
-  relation: 'relation',
+  aboutMe: 'aboutMe',
   phoneNumber: 'phoneNumber',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  isDeleted: 'isDeleted'
-};
-
-exports.Prisma.AlertPostScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  alertType: 'alertType',
-  isDeleted: 'isDeleted',
+  email: 'email',
+  linkedIn: 'linkedIn',
+  portfolio: 'portfolio',
+  location: 'location',
+  skills: 'skills',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.AlertPostLocationScalarFieldEnum = {
+exports.Prisma.EducationScalarFieldEnum = {
   id: 'id',
-  alertPostId: 'alertPostId',
-  type: 'type',
-  coordinates: 'coordinates',
-  images: 'images',
+  userId: 'userId',
+  institution: 'institution',
+  degree: 'degree',
+  concentrationOrMajor: 'concentrationOrMajor',
+  results: 'results',
+  isCurrent: 'isCurrent',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ExperienceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  company: 'company',
+  position: 'position',
+  jobType: 'jobType',
+  IndustryType: 'IndustryType',
+  location: 'location',
+  responsibilities: 'responsibilities',
+  startDate: 'startDate',
+  isCurrent: 'isCurrent',
+  endDate: 'endDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CertificationsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  institute: 'institute',
+  degree: 'degree',
+  credentialId: 'credentialId',
+  pdfUrl: 'pdfUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -250,6 +245,31 @@ exports.Prisma.PaymentsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ChatScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ChatParticipantScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  chatId: 'chatId'
+};
+
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  imageUrl: 'imageUrl',
+  seen: 'seen',
+  senderId: 'senderId',
+  receiverId: 'receiverId',
+  chatId: 'chatId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -268,23 +288,33 @@ exports.Role = exports.$Enums.Role = {
   admin: 'admin',
   sub_admin: 'sub_admin',
   supper_admin: 'supper_admin',
-  user: 'user'
+  student: 'student',
+  instructor: 'instructor',
+  business_instructor: 'business_instructor',
+  company_admin: 'company_admin',
+  employee: 'employee'
+};
+
+exports.ChatStatus = exports.$Enums.ChatStatus = {
+  accepted: 'accepted',
+  blocked: 'blocked'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
   DeviceHistory: 'DeviceHistory',
   Verification: 'Verification',
-  UserLocation: 'UserLocation',
-  SafeZone: 'SafeZone',
-  Location: 'Location',
-  EmergencyContact: 'EmergencyContact',
-  AlertPost: 'AlertPost',
-  AlertPostLocation: 'AlertPostLocation',
+  CV: 'CV',
+  Education: 'Education',
+  Experience: 'Experience',
+  Certifications: 'Certifications',
   Contents: 'Contents',
   Package: 'Package',
   Subscription: 'Subscription',
-  Payments: 'Payments'
+  Payments: 'Payments',
+  Chat: 'Chat',
+  ChatParticipant: 'ChatParticipant',
+  Message: 'Message'
 };
 
 /**
