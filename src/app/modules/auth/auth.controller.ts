@@ -20,7 +20,7 @@ const login = catchAsync(async (req: Request, res: Response) => {
     cookieOptions.sameSite = 'none';
   }
   res.cookie('refreshToken', refreshToken, cookieOptions);
-  res.cookie('token', refreshToken, cookieOptions);
+  // res.cookie('token', refreshToken, cookieOptions);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

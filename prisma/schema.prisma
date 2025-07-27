@@ -19,9 +19,10 @@ model User {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   email       String   @unique
+  designation String
   password    String
   status      status   @default(active)
-  role        Role     @default(user)
+  role        Role     @default(student)
   profile     String?
   phoneNumber String?
   expireAt    DateTime? @default(now())
@@ -30,12 +31,22 @@ model User {
   updatedAt   DateTime @updatedAt
 
   verification     Verification?
+  cv     CV?
   // location         UserLocation?
   // emergencyContact EmergencyContact[]
   // alertPost        AlertPost[]
+  education     Education[]
+  experience Experience[]
+  certifications Certifications[] 
   subscription     Subscription[]
   deviceHistory    DeviceHistory[]
   payments         Payments[]
+
+
+ 
+  ChatParticipant ChatParticipant[]
+   messagesSent    Message[] @relation("MessageSender")
+  messagesReceived Message[] @relation("MessageReceiver")
 }
 
 model DeviceHistory {
@@ -62,6 +73,83 @@ model Verification {
   @@id([userId])
 }
 
+//cv
+model CV { 
+  userId    String    @map("_id") @db.ObjectId
+ aboutMe  String?
+ phoneNumber String?
+ email       String?
+ linkedIn   String?
+ portfolio   String?
+ location  String?
+ skills     String[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+  education Education[]
+  experience Experience[]
+  certifications Certifications[]
+
+  user User @relation(fields: [userId], references: [id])
+ 
+  @@id([userId])
+}
+
+//education
+model Education {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  institution String
+  degree      String
+  concentrationOrMajor String?
+  results    String?
+  isCurrent  Boolean  @default(false)
+  startDate  DateTime
+  endDate    DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  cv CV @relation(fields: [userId], references: [userId])
+}
+
+
+//experience
+model Experience {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  company String
+  position      String
+  jobType String
+  IndustryType    String
+  location  String
+  responsibilities String
+  startDate  DateTime
+  isCurrent  Boolean  @default(false)
+  endDate    DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  cv CV @relation(fields: [userId], references: [userId])
+}
+
+
+//certifications
+model Certifications {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  institute String
+  degree      String
+  credentialId String?
+  pdfUrl String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  cv CV @relation(fields: [userId], references: [userId])
+}
 //contents
 model Contents {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -126,9 +214,64 @@ enum status {
   blocked
 }
 
+/*---------------------------------------------Messing---------------------------------------------*/
+//chat
+model Chat {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+   participants ChatParticipant[]
+  status       ChatStatus   @default(accepted)
+  messages     Message[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+
+model ChatParticipant{
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  chatId    String   @db.ObjectId 
+
+  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id])
+
+  @@unique([userId, chatId])
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  text      String?
+  imageUrl  String[]
+  seen      Boolean  @default(false)
+  
+  sender    User     @relation("MessageSender", fields: [senderId], references: [id])
+  senderId  String   @db.ObjectId
+
+  receiver  User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+  receiverId String  @db.ObjectId
+
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
 enum Role {
   admin
   sub_admin
   supper_admin
-  user
+  student
+  instructor
+  business_instructor
+  company_admin
+  employee
+
+}
+
+
+enum ChatStatus {
+  accepted
+  blocked
 }

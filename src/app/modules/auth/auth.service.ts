@@ -1,4 +1,3 @@
-import { IUser } from 'app/interface/socket';
 import {
   IChangePassword,
   IJwtPayload,
@@ -8,7 +7,7 @@ import {
 import prisma from 'app/shared/prisma';
 import AppError from 'app/error/AppError';
 import httpStatus from 'http-status';
-import { createToken, isPasswordMatched, verifyToken } from './user.utils';
+import { createToken, isPasswordMatched, verifyToken } from './auth.utils';
 import config from 'app/config';
 import { Request } from 'express';
 import UAParser from 'ua-parser-js';
