@@ -1,9 +1,9 @@
-import catchAsync from '../../utils/catchAsync';
 import { Request, Response } from 'express';
 import { authServices } from './auth.service';
-import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
-import config from '../../config';
+import catchAsync from '@app/utils/catchAsync';
+import config from '@app/config';
+import sendResponse from '@app/utils/sendResponse';
 
 // login
 const login = catchAsync(async (req: Request, res: Response) => {

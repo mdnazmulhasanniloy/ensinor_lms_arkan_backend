@@ -1,21 +1,23 @@
-import { Server } from 'http';
+import { createServer, Server } from 'http';
 import app from './app';
-import config from './app/config'; 
+import config from './app/config';
 import { exec } from 'child_process';
-//@ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars
-const colors = require('colors');
+import initializeSocketIO from 'app/socket';
+import colors from 'colors';
 let server: Server;
+const socketServer = createServer(app);
+
 let currentPort: number = Number(config.port) | 5000;
 let portCount = 0;
 
 async function main() {
+  const io = await initializeSocketIO(socketServer);
+
   server = app.listen(Number(currentPort), config?.ip as string, () => {
     console.log(
-      //@ts-ignore
-      '✨ Simple Server Listening on \n'.italic.brightGreen +
-        //@ts-ignore
-        `💫 http://${config?.ip}:${currentPort}`.bold.brightBlue,
+      colors.italic.green.bold(
+        `💫 Simple Server Listening on  http://${config?.ip}:${currentPort} `,
+      ),
     );
 
     // urlLauncher(`http://${config?.ip}:${currentPort}`);
@@ -23,19 +25,24 @@ async function main() {
     // urlLauncher(`http://${config?.ip}:${currentPort}`);
   });
 
+  io.listen(Number(config.socket_port));
+  console.log(
+    colors.yellow.bold(`⚡http://${config.ip}:${config.socket_port}`),
+  );
+
   server.on('error', (err: any) => {
     if (err.code === 'EADDRINUSE') {
       console.warn(
-        //@ts-ignore
-        `⚠️  Port ${currentPort} is in use. Trying next port...`.yellow,
+        colors.yellow(`⚠️  Port ${currentPort} is in use. Trying next port...`),
       );
       if (portCount < 10) {
         currentPort++;
         portCount++;
         main(); // retry with next port
       } else {
-        //@ts-ignore
-        console.error('❌ Max retries reached. Could not start server.'.red);
+        console.error(
+          colors.red('❌ Max retries reached. Could not start server.'),
+        );
         process.exit(1);
       }
     } else {
@@ -44,6 +51,7 @@ async function main() {
     }
   });
 }
+
 const urlLauncher = (url: string) => {
   const platform = process.platform;
 
@@ -52,7 +60,7 @@ const urlLauncher = (url: string) => {
     command = `start ${url}`;
   } else if (platform === 'darwin') {
     command = `open ${url}`;
-  } else { 
+  } else {
     command = `xdg-open ${url}`;
   }
 

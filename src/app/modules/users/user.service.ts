@@ -126,8 +126,7 @@ const getAll = async (query: Record<string, any>) => {
           status: true,
         },
       },
-      deviceHistory: true,
-      location: true,
+      deviceHistory: true, 
     },
   });
 
@@ -163,8 +162,7 @@ const getById = async (id: string) => {
           status: true,
         },
       },
-      deviceHistory: true,
-      location: true,
+      deviceHistory: true, 
     },
   });
 
@@ -176,8 +174,7 @@ const update = async (id: string, payload: Partial<User>) => {
     const result = await prisma.user.update({
       where: { id },
       data: payload,
-      include: {
-        location: true,
+      include: { 
         verification: true,
         deviceHistory: true,
       },

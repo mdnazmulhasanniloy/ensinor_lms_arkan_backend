@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import validateRequest from '../../middleware/validateRequest';
-import { otpControllers } from './otp.controller';
+import validateRequest from '@app/middleware/validateRequest';
+import { Router } from 'express'; 
 import { resentOtpValidations } from './otp.validation';
+import { otpControllers } from './otp.controller';
 
 const router = Router();
 

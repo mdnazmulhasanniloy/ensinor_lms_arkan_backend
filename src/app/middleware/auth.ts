@@ -1,11 +1,11 @@
 import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
-import { JwtPayload } from 'jsonwebtoken';
-import catchAsync from '../utils/catchAsync';
-import AppError from '../error/AppError';
-import config from '../config';
+import { JwtPayload } from 'jsonwebtoken'; 
 import { NextFunction, Request, Response } from 'express';
 import prisma from '../shared/prisma';
+import catchAsync from '@app/utils/catchAsync';
+import AppError from '@app/error/AppError';
+import config from '@app/config';
 
 const auth = (...userRoles: string[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {

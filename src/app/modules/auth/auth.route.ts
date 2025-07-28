@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authControllers } from './auth.controller';
-import auth from '../../middleware/auth';
 // import validateRequest from '../../middleware/validateRequest';
+import auth from '@app/middleware/auth';
 import { USER_ROLE } from '../users/user.constants';
 // import { authValidation } from './auth.validation';
 // import { USER_ROLE } from '../user/user.constants';
