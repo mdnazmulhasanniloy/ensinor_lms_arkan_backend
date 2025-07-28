@@ -5,6 +5,7 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { socketAuthMiddleware } from './middleware/auth.socket';
 import { Socket } from 'socket.io';
 import { connectRedis, pubClient, subClient } from '@app/redis';
+import { getOnlineUserIds } from './handlers/onlineUser.handlers';
 
 const initializeSocketIO = async (server: HttpServer) => {
   await connectRedis();
@@ -31,6 +32,9 @@ const initializeSocketIO = async (server: HttpServer) => {
 
     //  socketID -> userId map
     await pubClient.hSet('socketId_to_userId', socket.id, userId);
+
+    // online users
+    socket.on('getOnlineUsers', async () => getOnlineUserIds(io));
 
     socket.on('disconnect', async () => {
       console.log(`Client disconnected: ${socket.id}`);
